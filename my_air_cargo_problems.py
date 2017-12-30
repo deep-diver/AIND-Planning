@@ -211,9 +211,20 @@ class AirCargoProblem(Problem):
         conditions by ignoring the preconditions required for an action to be
         executed.
         """
-        # TODO implement (see Russell-Norvig Ed-3 10.2.3  or Russell-Norvig Ed-2 11.2)
-        count = 0
-        return count
+        count = len(self.goal)
+        goal_tmp = list(self.goal)
+
+        actions = self.actions(node.state)
+        for action in actions:
+            for precond in action.precond_pos:
+                if precond in goal_tmp:
+                    goal_tmp.remove(precond)
+
+            for precond in action.precond_neg:
+                if precond in goal_tmp:
+                    goal_tmp.remove(precond)
+
+        return len(goal_tmp)
 
 
 def air_cargo_p1() -> AirCargoProblem:
@@ -306,8 +317,8 @@ def air_cargo_p3() -> AirCargoProblem:
            expr('In(C3, P1)'), expr('In(C3, P2)'),
            expr('At(C4, SFO)'), expr('At(C4, JFK)'), expr('At(C4, ATL)'),
            expr('In(C4, P1)'), expr('In(C4, P2)'),
-           expr('At(P1, JFK)'),
-           expr('At(P2, SFO)')]
+           expr('At(P1, JFK)'), expr('At(P1, ATL)'), expr('At(P1, ORD)'),
+           expr('At(P2, SFO)'), expr('At(P2, ATL)'), expr('At(P2, ORD)')]
 
     init = FluentState(pos, neg)
     goal = [expr('At(C1, JFK)'),
